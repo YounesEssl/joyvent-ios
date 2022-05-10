@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useState, useEffect } from "react/cjs/react.development";
 import base from "../api/base"
 
@@ -32,3 +32,23 @@ export default function EventList() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  maincontainer : {
+    display:"flex",
+    justifyContent:"center",
+  },
+
+  eventcontainer : {
+    display:"flex",
+    alignItems: "center",
+    borderWidth: 1,
+    justifyContent: "spaceAround",
+    padding:20,
+    fontSize:20,
+  },
+
+  firstcontainer : {
+    paddingRight : 50,
+  }
+})

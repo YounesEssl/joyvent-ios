@@ -1,4 +1,4 @@
-import { Platform, Text, View, Button } from "react-native";
+import { Text, View, Button } from "react-native";
 import { useEffect, useState } from "react/cjs/react.development";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -7,12 +7,10 @@ import NewEvent from "./NewEvent";
 import Events from "./Events";
 
 
-
 import base from "../api/base";
 
 export default function HomeScreen({ navigation }) {
 
-  const [event, setEvent] = useState([]);
 
   useEffect(() => {
     base("tblzVrtPuEd6PpMEg")

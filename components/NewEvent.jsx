@@ -1,20 +1,56 @@
 import { View, Text, Button, TextInput, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRef } from "react/cjs/react.development";
+import { useRef, useState, useEffect } from "react/cjs/react.development";
 import base from "../api/base";
+import * as Location from "expo-location";
 
 export default function NewEvent() {
+
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [adress, setAdress] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+      let getlocation = await Location.getCurrentPositionAsync({});
+      if (getlocation) {
+        const latitude = getlocation.coords.latitude;
+        const longitude = getlocation.coords.longitude;
+        let response = await Location.reverseGeocodeAsync({latitude, longitude})
+          let getadress = `${response[0].city}`;
+        setAdress(getadress);
+      }
+      setLocation(getlocation)
+    })();
+  }, []);
+
+  let text = "Waiting..";
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = adress;
+  }
+
   const nameRef = useRef();
   const hourRef = useRef();
   const locationRef = useRef();
   const passwordRef = useRef();
-
+  const [name, setName] = useState("");
+  const [hour, setHour] = useState("");
+  const [getLocation, setGetLocation] = useState("");
+  const [password, setPassword] = useState("");
+  
   const newEvent = (elm) => {
     elm.preventDefault();
-    const Name = nameRef.current.value;
-    const Hour = hourRef.current.value;
-    const Location = locationRef.current.value;
-    const Password = passwordRef.current.value;
+    const Name = name;
+    const Hour = hour;
+    const Location = getLocation;
+    const Password = password;
     base("tblzVrtPuEd6PpMEg").create(
       { Name, Hour, Location, Password },
       function (err, record) {
@@ -22,23 +58,25 @@ export default function NewEvent() {
           console.error(err);
           return;
         }
-        prompt(record.getId());
+        alert(record.getId());
       }
     );
   };
+
+  
 
   return (
     <View style={styles.formcontainer}>
       <View style={styles.sndformcontainer}>
         <Text style={styles.title}>Create Your Event</Text>
         <SafeAreaView style={styles.form}>
-          <View class="space">
+          <View>
             <Text style={styles.Text}>Your Name</Text>
             <TextInput
               style={styles.formcontrol}
               id="inputName"
               aria-describedby="nameHelp"
-              ref={nameRef}
+              onChangeText= {elm => (setName(elm))}
             />
           </View>
           <View style={styles.space}>
@@ -46,31 +84,31 @@ export default function NewEvent() {
             <TextInput
               style={styles.formcontrol}
               id="inputHour"
-              ref={hourRef}
+              onChangeText= {elm => (setHour(elm))}
             />
           </View>
           <View style={styles.space}>
             <Text style={styles.Text}>Location</Text>
             <TextInput
-              value={"test"}
+              value={adress}
               style={styles.formcontrol}
               id="inputLocation"
-              ref={locationRef}
+              onChangeText= {elm => (setGetLocation(elm))}
             />
           </View>
-          <View class="space">
+          <View>
             <Text style={styles.Text}>Password</Text>
             <TextInput
               secureTextEntry={true}
               style={styles.formcontrol}
               id="inputLocation"
-              ref={passwordRef}
+              onChangeText= {elm => (setPassword(elm))}
             />
           </View>
           <Button
             type="submit"
             title="Create Event"
-            onClick={newEvent}
+            onPress={newEvent}
           ></Button>
         </SafeAreaView>
       </View>
@@ -116,7 +154,7 @@ const styles = StyleSheet.create({
 
   input: {
     borderWidth: 1,
-    background: "#f7fff7",
+    background: "#F7FFF7",
   },
 
   button: {
